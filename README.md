@@ -9,5 +9,5 @@ It's a pretty faithful mapping of the C code, with some minor amendments. Notabl
 
 Note that the code was handwritten (no LLMs were harmed in the making of).
 
-> ![WARNING]
+> [!WARNING]
 > It should go without saying, but please don't use this for real-world applications. The code here is purely for educative purposes.
