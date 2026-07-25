@@ -146,7 +146,7 @@ fn scalarmult(scalar: &[u8; 32], point: &[u8; 32], out: &mut [u8; 32]) {
         fsub(&a.clone(), &c, &mut a);
         fmul(&a, &a, &mut b);
         fsub(&d, &f, &mut c);
-        fmul(&c, &_121665, &mut a); // 35 fmul(a, c, _121665);
+        fmul(&c, &_121665, &mut a);
         fadd(&a.clone(), &d, &mut a);
         fmul(&c.clone(), &a, &mut c);
         fmul(&d, &f, &mut a);
