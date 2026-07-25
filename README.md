@@ -1,4 +1,4 @@
-# CurveX25519 elliptic curve cryptography
+# Curve25519 elliptic curve cryptography
 
 This is a pure-Rust implementation of the [Curve25519/X25519](https://en.wikipedia.org/wiki/Curve25519) elliptic curve.
 It's a constant-time algorithm, transliterated from the provided C as I worked through the superb explanatory text:
