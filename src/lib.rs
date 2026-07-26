@@ -5,6 +5,18 @@ use rand::{
 
 type FieldElem = [i64; 16];
 
+const _121665: FieldElem = {
+    let mut c = [0; 16];
+    [c[0], c[1]] = [0xDB41, 1];
+    c
+};
+
+const _9: [u8; 32] = {
+    let mut c = [0; 32];
+    c[0] = 9;
+    c
+};
+
 fn unpack25519(input: &[u8], out: &mut FieldElem) {
     for i in 0..16 {
         out[i] = input[2 * i] as i64 + ((input[2 * i + 1] as i64) << 8);
@@ -79,10 +91,8 @@ fn swap25519(p: &mut FieldElem, q: &mut FieldElem, bit: i64) {
 fn pack25519(input: &FieldElem, out: &mut [u8; 32]) {
     let mut carry;
     let mut m: FieldElem = [0; 16];
-    let mut t: FieldElem = [0; 16];
-    for i in 0..16 {
-        t[i] = input[i];
-    }
+    let mut t: FieldElem = *input;
+
     carry25519(&mut t);
     carry25519(&mut t);
     carry25519(&mut t);
@@ -105,33 +115,23 @@ fn pack25519(input: &FieldElem, out: &mut [u8; 32]) {
 }
 
 fn scalarmult(scalar: &[u8; 32], point: &[u8; 32], out: &mut [u8; 32]) {
-    let mut _121665: FieldElem = [0; 16];
-    [_121665[0], _121665[1]] = [0xDB41, 1];
+    let mut x: FieldElem = [0; 16];
 
-    let mut clamped = [0; 32];
-    let mut bit: i64;
+    let mut clamped = *scalar;
+    clamped[0] &= 0xf8;
+    clamped[31] = (clamped[31] & 0x7f) | 0x40;
+    unpack25519(point, &mut x);
+    
     let mut a: FieldElem = [0; 16];
-    let mut b: FieldElem = [0; 16];
+    let mut b: FieldElem = x;
     let mut c: FieldElem = [0; 16];
     let mut d: FieldElem = [0; 16];
     let mut e: FieldElem = [0; 16];
     let mut f: FieldElem = [0; 16];
-    let mut x: FieldElem = [0; 16];
-
-    for i in 0..32 {
-        clamped[i] = scalar[i];
-    }
-    clamped[0] &= 0xf8;
-    clamped[31] = (clamped[31] & 0x7f) | 0x40;
-    unpack25519(point, &mut x);
-
-    for i in 0..16 {
-        b[i] = x[i];
-        (d[i], a[i], c[i]) = (0, 0, 0);
-    }
     (a[0], d[0]) = (1, 1);
+
     for i in (0..=254).rev() {
-        bit = ((clamped[i >> 3] >> (i & 7)) & 1) as i64;
+        let bit = ((clamped[i >> 3] >> (i & 7)) & 1) as i64;
         swap25519(&mut a, &mut b, bit);
         swap25519(&mut c, &mut d, bit);
         fadd(&a, &c, &mut e);
@@ -161,8 +161,6 @@ fn scalarmult(scalar: &[u8; 32], point: &[u8; 32], out: &mut [u8; 32]) {
 }
 
 fn scalarmult_base(scalar: &[u8; 32], out: &mut [u8; 32]) {
-    let mut _9 = [0; 32];
-    _9[0] = 9;
     scalarmult(scalar, &_9, out);
 }
 
