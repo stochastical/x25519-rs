@@ -68,7 +68,7 @@ fn finverse(input: &FieldElem, out: &mut FieldElem) {
 
 fn swap25519(p: &mut FieldElem, q: &mut FieldElem, bit: i64) {
     let mut t;
-    let c = !(bit as i64 - 1);
+    let c = !(bit - 1);
     for i in 0..16 {
         t = c & (p[i] ^ q[i]);
         p[i] ^= t;
